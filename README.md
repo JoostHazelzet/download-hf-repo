@@ -2,25 +2,38 @@
 
 A powerful command-line tool to download all files from a HuggingFace repository with progress tracking, integrity verification, and comprehensive status checking.
 
+## Key Features
+
+- **1:1 repository cloning**: Clones the file structure as shown on HuggingFace repo one to one.
+- **Intelligent Download Management**: Advanced analysis for partial downloads, data corruption and SHA256 checksum verification
+- **Streaming Downloads**: Efficient handling of large files (tested successfully on 60GB+ file sizes). Automatically resumes interrupted downloads
+
+## Command Line Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--check` | `-c` | Check repository status and file integrity without downloading |
+| `--force` | `-f` | Force re-download all files even if they already exist |
+| `--force-files` | | Force re-download specific files (provide relative paths) |
+| `--verbose` | `-v` | Enable verbose output with detailed error information |
+
+
 ## Usage
 
 ### Basic Usage
 
-Download a repository to the default Hugging Face location. 
+Downloads a repository to the default Hugging Face location as `{default_hf_path}/models/{organization}/{model_name}/`.
 
-| Platform      | Default Path                                      |
+| Platform      | Default Hugging Face Path                         |
 |---------------|---------------------------------------------------|
 | Linux/macOS   | `~/.cache/huggingface/`                           |
 | Windows       | `C:\Users\<YourUsername>\.cache\huggingface\`     |
 
 
-Uses alternative location if Hugging Face's `HF_HOME` environment variable is set. 
+Uses the alternative location if Hugging Face's `HF_HOME` environment variable is set. For example, `mlx-community/Qwen3-Embedding-0.6B-8bit` will be downloaded to:
+`{HF_HOME}/models/mlx-community/Qwen3-Embedding-0.6B-8bit/`
 
-```bash
-python3 download_hf_repo.py mlx-community/Qwen3-Embedding-0.6B-8bit
-```
-
-## Custom Download Path
+### Custom Download Path
 
 Download to a specific directory:
 
@@ -30,7 +43,7 @@ python3 download_hf_repo.py mlx-community/Qwen3-Embedding-0.6B-8bit /path/to/cus
 
 ### Repository Status Check
 
-Check repository status and file integrity without downloading (recommended before large downloads):
+Check repository status and file integrity without downloading (recommended to run before and after large repo downloads, or recheck what has been changed when a repo was updated):
 
 ```bash
 python3 download_hf_repo.py --check mlx-community/Qwen3-30B-A3B-Instruct-2507-6bit-DWQ-lr8e-8
@@ -57,62 +70,6 @@ Get detailed error information and stack traces:
 ```bash
 python3 download_hf_repo.py --verbose mlx-community/Qwen3-Embedding-0.6B-8bit
 ```
-
-## Key Features
-
-### 🔍 **Advanced Status Checking (`--check`)**
-- **SHA256 Verification**: Uses HuggingFace Git LFS metadata for cryptographic verification
-- **Progress Indicators**: Shows progress for SHA256 calculation on large files (~2.4GB/s throughput)
-- **Color-coded Status**: 
-  - 🔴 Missing files
-  - 🟡 Incomplete files (with percentage completion)
-  - 🟠 Suspicious files (corruption detection)
-  - ✅ Verified files (SHA256 checksum passed)
-- **Detailed Diagnostics**: Zero-byte analysis and trailing data detection
-- **Smart Commands**: Suggests exact commands to fix detected issues
-
-### 📥 **Intelligent Download Management**
-- **Resume Capability**: Automatically resumes interrupted downloads using HTTP Range requests
-- **Smart Resume Logic**: Continues from exact byte position where download stopped
-- **Corruption Detection**: Restarts download if local file is larger than expected (corruption)
-- **Server Compatibility**: Falls back to full re-download if server doesn't support range requests
-- **Size Verification**: Validates file sizes before and after download
-- **Smart Preview**: Shows remaining download size accounting for partial files
-- **Streaming Downloads**: Efficient handling of large files (60GB+ models)
-- **Progress Tracking**: Dual progress bars for overall and individual file progress
-
-### 🛡️ **File Integrity & Safety**
-- **SHA256 Checksums**: Cryptographic verification using HuggingFace metadata
-- **Corruption Detection**: Advanced analysis for partial downloads and data corruption
-- **Fallback Verification**: Zero-byte analysis when checksums unavailable
-- **Clean Recovery**: Automatic cleanup of failed/partial downloads
-- **Force Options**: Selective or complete re-download capabilities
-
-### 🚀 **Performance & Reliability**
-- **64KB Chunk Processing**: Optimized for both download and verification speed
-- **Error Resilience**: Continues downloading other files if one fails
-- **Memory Efficient**: Streaming approach for large files
-- **Network Resilience**: Handles connection issues gracefully
-
-## Command Line Options
-
-| Option | Short | Description |
-|--------|-------|-------------|
-| `--check` | `-c` | Check repository status and file integrity without downloading |
-| `--force` | `-f` | Force re-download all files even if they already exist |
-| `--force-files` | | Force re-download specific files (provide relative paths) |
-| `--verbose` | `-v` | Enable verbose output with detailed error information |
-
-## Environment Variables
-
-- `HF_HOME`: Base directory for downloads (default: current directory)
-
-## File Structure
-
-Files are downloaded to: `{base_path}/models/{organization}/{model_name}/`
-
-For example, `mlx-community/Qwen3-Embedding-0.6B-8bit` will be downloaded to:
-`{HF_HOME}/models/mlx-community/Qwen3-Embedding-0.6B-8bit/`
 
 ## Example Workflows
 
